@@ -36,6 +36,19 @@ public class MainActivity extends AppCompatActivity {
         Runnable myRunnable = new MyRunnable(ip, port);
         Thread thread = new Thread(myRunnable);
         thread.start();
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        if(((MyRunnable) myRunnable).getResult()) {
+            String result = "Port " + port + " is open";
+            output_field.setText(result);
+        } else {
+            String result = "Port " + port + " is closed";
+            output_field.setText(result);
+        }
+
         /*
         try{
             Socket socket = new Socket();
