@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Zort Scanner</string>
-    <string name="ip_field_hint">IP Address</string>
+    <string name="ip_field_hint">IP Address or Hostname</string>
     <string name="port_field_hint">Port Address</string>
     <string name="button_text">Start Scan</string>
     <string name="output_text">Results</string>
