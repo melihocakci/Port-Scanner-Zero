@@ -1,4 +1,4 @@
-package com.android.test;
+package com.yildiz.scanner;
 
 import org.junit.Test;
 

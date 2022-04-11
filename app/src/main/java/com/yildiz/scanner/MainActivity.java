@@ -1,4 +1,4 @@
-package com.android.test;
+package com.yildiz.scanner;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -8,9 +8,6 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
-
-import java.net.InetSocketAddress;
-import java.net.Socket;
 
 public class MainActivity extends AppCompatActivity {
 
