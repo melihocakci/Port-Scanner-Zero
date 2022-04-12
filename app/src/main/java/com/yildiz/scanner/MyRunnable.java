@@ -18,7 +18,7 @@ public class MyRunnable implements Runnable  {
     public void run() {
         try{
             Socket socket = new Socket();
-            socket.connect(new InetSocketAddress(ip, port), 5000);
+            socket.connect(new InetSocketAddress(ip, port), 400);
             socket.close();
             System.out.println("Port " + port + " is open");
             open = true;
