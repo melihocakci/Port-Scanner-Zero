@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Test">
         <activity
-            android:name="com.yildiz.scanner.MainActivity"
+            android:name="com.yildiz.scanner.ScanActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
