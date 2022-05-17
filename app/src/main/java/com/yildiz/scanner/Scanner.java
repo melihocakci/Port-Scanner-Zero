@@ -1,55 +1,65 @@
 package com.yildiz.scanner;
 
-import android.annotation.SuppressLint;
+import static java.lang.Thread.sleep;
 
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.LinkedList;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Scanner implements Runnable{
-    private static String host;
+    private static InetAddress host;
     private static LinkedList<Integer> portList;
-    @SuppressLint("StaticFieldLeak")
-    private static ScanActivity scanActivity;
+    private static int threadNum;
     private static final LinkedList<Integer> openPorts = new LinkedList<Integer>();
     private static final ReentrantLock mutex = new ReentrantLock();
-    private static int threadNum;
 
-    public static void startScan(String str, LinkedList<Integer> list, ScanActivity activity) {
-        host = str;
+    public static LinkedList<Integer> scanPorts(InetAddress address, LinkedList<Integer> list) {
+        host = address;
         portList = list;
-        scanActivity = activity;
+
         openPorts.clear();
-        // launch threads
-        if(list.size() < 128) {
-            threadNum = list.size();
-        } else {
+
+        // decide on thread number
+        threadNum = (int) Math.sqrt(list.size());
+        if(threadNum > 128) {
             threadNum = 128;
         }
+
+        LinkedList<Thread> threads = new LinkedList<Thread>();
+        // launch threads
         for(int i = 0; i < threadNum; i++) {
             Thread thread = new Thread(new Scanner());
             thread.start();
+            threads.add(thread);
         }
+
+        // wait for threads to finish
+        for(Thread thread: threads) {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return openPorts;
     }
 
     @Override
     public void run() {
-        int port;
         while(true) {
             // lock mutex
             mutex.lock();
             // return if port list is empty
             if(portList.isEmpty()) {
-                if(threadNum == 1) {
-                    scanActivity.results(openPorts);
-                }
                 threadNum--;
                 mutex.unlock();
                 return;
             }
             // get port
-            port = portList.getFirst();
+            int port = portList.getFirst();
             portList.removeFirst();
             // get socket
             Socket socket = new Socket();

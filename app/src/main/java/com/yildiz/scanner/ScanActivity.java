@@ -4,13 +4,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.io.FileNotFoundException;
-import java.io.PrintStream;
+import java.net.InetAddress;
 import java.util.LinkedList;
 
 public class ScanActivity extends AppCompatActivity {
@@ -19,6 +19,7 @@ public class ScanActivity extends AppCompatActivity {
     private TextView output_field;
     private double start;
     private int portNum;
+    private LinkedList<Integer> openPorts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,41 +32,68 @@ public class ScanActivity extends AppCompatActivity {
     }
 
     public void startScan(View view) {
-        String[] gap;
-        int first, last, j;
         // start timer
         start = System.currentTimeMillis();
         // close keyboard
         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        // get host address from text field
-        String host = ip_field.getText().toString();
-        // get port list from text field
-        String port_input = port_field.getText().toString();
-        // obtain linked list of ports
-        LinkedList<Integer> portList = new LinkedList<Integer>();
-        try {
-            String[] ports = port_input.split(",");
 
-            for(String i : ports) {
-                if(i.contains("-")) {
-                    gap = i.split("-");
-                    first = Integer.parseInt(gap[0]);
-                    last = Integer.parseInt(gap[1]);
-                    for(j = first; j <= last; j++) {
-                        portList.add(j);
-                    }
-                } else {
-                    portList.add(Integer.parseInt(i));
+        final Handler handler = new Handler();
+
+        Runnable scanHandler = new Runnable() {
+            @Override
+            public void run() {
+                // get host address from text field
+                String hostname = ip_field.getText().toString();
+                // get port list from text field
+                String port_input = port_field.getText().toString();
+
+                // get host address
+                InetAddress host;
+                try {
+                    host = InetAddress.getByName(hostname);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return;
                 }
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            output_field.setText("Wrong port input");
-        }
 
-        portNum = portList.size();
-        Scanner.startScan(host, portList, this);
+                // get port list
+                LinkedList<Integer> portList = new LinkedList<Integer>();
+                try {
+                    String[] ports = port_input.split(",");
+                    for(String i : ports) {
+                        if(i.contains("-")) {
+                            String[] gap = i.split("-");
+                            int first = Integer.parseInt(gap[0]);
+                            int last = Integer.parseInt(gap[1]);
+                            for(int j = first; j <= last; j++) {
+                                portList.add(j);
+                            }
+                        } else {
+                            portList.add(Integer.parseInt(i));
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return;
+                }
+
+                portNum = portList.size();
+                openPorts = Scanner.scanPorts(host, portList);
+
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        results(openPorts);
+                    }
+                });
+            }
+        };
+
+        Thread thread = new Thread(scanHandler);
+        thread.start();
+
+        output_field.setText("Scanning..");
     }
 
     public void results(LinkedList<Integer> openPorts) {
