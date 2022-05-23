@@ -20,6 +20,8 @@ public class ScanActivity extends AppCompatActivity {
     private double start;
     private int portNum;
     private LinkedList<Integer> openPorts;
+    private boolean scanning;
+    private final Handler handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,16 +33,23 @@ public class ScanActivity extends AppCompatActivity {
         output_field = findViewById(R.id.output_field);
     }
 
-    public void startScan(View view) {
+    public void toggleScan(View view) {
+        if(scanning) {
+            scanning = false;
+            Scanner.stopScan();
+            print("Scan stopped");
+            return;
+        }
+
+        // started scan
+        scanning = true;
         // start timer
         start = System.currentTimeMillis();
         // close keyboard
         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
-        final Handler handler = new Handler();
-
-        Runnable scanHandler = new Runnable() {
+        Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 // get host address from text field
@@ -81,31 +90,35 @@ public class ScanActivity extends AppCompatActivity {
                 portNum = portList.size();
                 openPorts = Scanner.scanPorts(host, portList);
 
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        results(openPorts);
+                if(scanning) {
+                    // end timer
+                    double end = System.currentTimeMillis();
+                    StringBuilder output = new StringBuilder();
+                    output.append("Scan completed.\n");
+                    output.append("Time elapsed: ").append((end - start) / 1000).append("s\n");
+                    output.append(portNum - openPorts.size()).append(" closed ports\n");
+                    for(int i = 0; i < openPorts.size(); i++) {
+                        output.append("Port ").append(openPorts.get(i)).append(" is open\n");
                     }
-                });
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            print(output.toString());
+                        }
+                    });
+                    scanning = false;
+                }
             }
         };
 
-        Thread thread = new Thread(scanHandler);
-        thread.start();
+        Thread scanHandler = new Thread(runnable);
+        scanHandler.start();
 
         output_field.setText("Scanning..");
     }
 
-    public void results(LinkedList<Integer> openPorts) {
-        // end timer
-        double end = System.currentTimeMillis();
-        StringBuilder output = new StringBuilder();
-        output.append("Scan completed.\n");
-        output.append("Time elapsed: ").append((end - start) / 1000).append("s\n");
-        output.append(portNum - openPorts.size()).append(" closed ports\n");
-        for(int i = 0; i < openPorts.size(); i++) {
-            output.append("Port ").append(openPorts.get(i)).append(" is open\n");
-        }
-        output_field.setText(output.toString());
+    public void print(String text) {
+        output_field.setText(text);
     }
 }

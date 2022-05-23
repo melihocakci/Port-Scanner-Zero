@@ -2,6 +2,6 @@
     <string name="app_name">Port Scanner Demo</string>
     <string name="host_field_hint">IP Address or Hostname</string>
     <string name="port_field_hint">Port Address</string>
-    <string name="button_text">Start Scan</string>
+    <string name="button">Scan</string>
     <string name="output_text">Results</string>
 </resources>

@@ -14,12 +14,13 @@ public class Scanner implements Runnable{
     private static int threadNum;
     private static final LinkedList<Integer> openPorts = new LinkedList<Integer>();
     private static final ReentrantLock mutex = new ReentrantLock();
+    private static boolean stop;
 
     public static LinkedList<Integer> scanPorts(InetAddress address, LinkedList<Integer> list) {
         host = address;
         portList = list;
-
         openPorts.clear();
+        stop = false;
 
         // decide on thread number
         threadNum = (int) Math.sqrt(list.size());
@@ -47,13 +48,19 @@ public class Scanner implements Runnable{
         return openPorts;
     }
 
+    public static void stopScan() {
+        mutex.lock();
+        stop = true;
+        mutex.unlock();
+    }
+
     @Override
     public void run() {
         while(true) {
             // lock mutex
             mutex.lock();
             // return if port list is empty
-            if(portList.isEmpty()) {
+            if(stop || portList.isEmpty()) {
                 threadNum--;
                 mutex.unlock();
                 return;
