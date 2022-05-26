@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -14,25 +15,37 @@ import java.net.InetAddress;
 import java.util.LinkedList;
 
 public class ScanActivity extends AppCompatActivity {
-    private EditText ip_field;
+    private EditText host_field;
     private EditText port_field;
     private TextView output_field;
+    private Button button;
     private double start;
     private boolean scanning;
     private final Handler handler = new Handler();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.scan_activity);
+
+        host_field = findViewById(R.id.host_field);
+        port_field = findViewById(R.id.port_field);
+        output_field = findViewById(R.id.output_field);
+        button = (Button) findViewById(R.id.button);
+    }
 
     private class ScanHandler implements Runnable {
         @Override
         public void run() {
             // get host address from text field
-            String hostname = ip_field.getText().toString();
+            String host_input = host_field.getText().toString();
             // get port list from text field
             String port_input = port_field.getText().toString();
 
             // get host address
             InetAddress host;
             try {
-                host = InetAddress.getByName(hostname);
+                host = InetAddress.getByName(host_input);
             } catch (Exception e) {
                 print("Cannot get host address");
                 scanning = false;
@@ -43,16 +56,16 @@ public class ScanActivity extends AppCompatActivity {
             LinkedList<Integer> portList = new LinkedList<Integer>();
             try {
                 String[] ports = port_input.split(",");
-                for(String i : ports) {
-                    if(i.contains("-")) {
-                        String[] gap = i.split("-");
+                for(String str : ports) {
+                    if(str.contains("-")) {
+                        String[] gap = str.split("-");
                         int first = Integer.parseInt(gap[0]);
                         int last = Integer.parseInt(gap[1]);
                         for(int j = first; j <= last; j++) {
                             portList.add(j);
                         }
                     } else {
-                        portList.add(Integer.parseInt(i));
+                        portList.add(Integer.parseInt(str));
                     }
                 }
             } catch (Exception e) {
@@ -85,27 +98,23 @@ public class ScanActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     output_field.setText(str);
+                    button.setText(R.string.button_start);
                 }
             });
         }
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.scan_activity);
-
-        ip_field = findViewById(R.id.host_field);
-        port_field = findViewById(R.id.port_field);
-        output_field = findViewById(R.id.output_field);
     }
 
     public void toggleScan(View view) {
         if(scanning) {
             scanning = false;
             Scanner.stopScan();
+            button.setText(R.string.button_start);
             output_field.setText("Scan stopped");
         } else {
+            if(host_field.getText().length() == 0 || port_field.getText().length() == 0) {
+                output_field.setText("Please fill the fields");
+                return;
+            }
             // started scan
             scanning = true;
             // start timer
@@ -113,12 +122,12 @@ public class ScanActivity extends AppCompatActivity {
             // close keyboard
             InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-
+            // start scan handler
             Runnable scanHandler = new ScanHandler();
-
             Thread thread = new Thread(scanHandler);
             thread.start();
 
+            button.setText(R.string.button_stop);
             output_field.setText("Scanning");
         }
     }
