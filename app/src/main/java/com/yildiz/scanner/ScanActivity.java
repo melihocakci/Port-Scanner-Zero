@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -31,6 +32,7 @@ public class ScanActivity extends AppCompatActivity {
         host_field = findViewById(R.id.host_field);
         port_field = findViewById(R.id.port_field);
         output_field = findViewById(R.id.output_field);
+        output_field.setMovementMethod(new ScrollingMovementMethod());
         button = findViewById(R.id.button);
     }
 
