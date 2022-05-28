@@ -2,17 +2,19 @@ package com.yildiz.scanner;
 
 import static java.lang.Thread.sleep;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.LinkedList;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Scanner implements Runnable{
     private static InetAddress host;
     private static LinkedList<Integer> portList;
-    private static int threadNum;
     private static final LinkedList<Integer> openPorts = new LinkedList<Integer>();
+    private static final LinkedList<Integer> filteredPorts = new LinkedList<Integer>();
     private static final ReentrantLock mutex = new ReentrantLock();
     private static boolean stop;
 
@@ -20,10 +22,11 @@ public class Scanner implements Runnable{
         host = address;
         portList = list;
         openPorts.clear();
+        filteredPorts.clear();
         stop = false;
 
         // decide on thread number
-        threadNum = (int) Math.sqrt(list.size());
+        int threadNum = (int) Math.sqrt(list.size());
         if(threadNum > 128) {
             threadNum = 128;
         }
@@ -61,7 +64,6 @@ public class Scanner implements Runnable{
             mutex.lock();
             // return if port list is empty
             if(stop || portList.isEmpty()) {
-                threadNum--;
                 mutex.unlock();
                 return;
             }
@@ -81,10 +83,22 @@ public class Scanner implements Runnable{
                 openPorts.add(port);
                 mutex.unlock();
                 //System.out.println("Port " + port + " is open");
-            } catch (Exception ex) {
+            } catch (SocketTimeoutException e) {
+                // timeout
+                mutex.lock();
+                filteredPorts.add(port);
+                mutex.unlock();
+            } catch (IOException e) {
                 // connection failed
             }
         }
     }
 
+    public static LinkedList<Integer> getOpenPorts() {
+        return openPorts;
+    }
+
+    public static LinkedList<Integer> getFilteredPorts() {
+        return filteredPorts;
+    }
 }

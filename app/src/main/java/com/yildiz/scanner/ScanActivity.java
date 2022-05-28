@@ -31,7 +31,7 @@ public class ScanActivity extends AppCompatActivity {
         host_field = findViewById(R.id.host_field);
         port_field = findViewById(R.id.port_field);
         output_field = findViewById(R.id.output_field);
-        button = (Button) findViewById(R.id.button);
+        button = findViewById(R.id.button);
     }
 
     private class ScanHandler implements Runnable {
@@ -47,8 +47,7 @@ public class ScanActivity extends AppCompatActivity {
             try {
                 host = InetAddress.getByName(host_input);
             } catch (Exception e) {
-                print("Cannot get host address");
-                scanning = false;
+                error("Cannot get host address");
                 return;
             }
 
@@ -69,36 +68,46 @@ public class ScanActivity extends AppCompatActivity {
                     }
                 }
             } catch (Exception e) {
-                print("Invalid port input");
-                scanning = false;
+                error("Invalid port input");
                 return;
             }
 
             int portNum = portList.size();
-            LinkedList<Integer> openPorts = Scanner.scanPorts(host, portList);
+            Scanner.scanPorts(host, portList);
+            LinkedList<Integer> openPorts = Scanner.getOpenPorts();
+            LinkedList<Integer> filteredPorts = Scanner.getFilteredPorts();
 
             if(scanning) {
-                scanning = false;
                 // end timer
                 double end = System.currentTimeMillis();
                 StringBuilder output = new StringBuilder();
-                output.append("Scan completed.\n");
-                output.append("Time elapsed: ").append((end - start) / 1000).append("s\n");
-                output.append(portNum - openPorts.size()).append(" closed ports\n");
-                for(int i = 0; i < openPorts.size(); i++) {
-                    output.append("Port ").append(openPorts.get(i)).append(" is open\n");
+                output.append("Scan completed in ").append((end - start) / 1000).append("s\n");
+                output.append(portNum - openPorts.size() - filteredPorts.size()).append(" closed ports\n");
+                for(int port: openPorts) {
+                    output.append("Port ").append(port).append(" is open\n");
+                }
+                for(int port: filteredPorts) {
+                    output.append("Port ").append(port).append(" is filtered\n");
                 }
 
-                print(output.toString());
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        scanning = false;
+                        button.setText(R.string.button_start);
+                        output_field.setText(output.toString());
+                    }
+                });
             }
         }
 
-        public void print(String str) {
+        private void error(String message) {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    output_field.setText(str);
+                    scanning = false;
                     button.setText(R.string.button_start);
+                    output_field.setText(message);
                 }
             });
         }
