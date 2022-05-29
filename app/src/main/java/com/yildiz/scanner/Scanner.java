@@ -1,7 +1,5 @@
 package com.yildiz.scanner;
 
-import static java.lang.Thread.sleep;
-
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
