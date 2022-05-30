@@ -1,8 +1,10 @@
 <resources>
     <string name="app_name">Port Scanner Zero</string>
     <string name="host_field_hint">IP Address or Hostname</string>
-    <string name="port_field_hint">Port Address</string>
+    <string name="port_field_hint">Port Numbers</string>
     <string name="button_start">Start</string>
     <string name="button_stop">Stop</string>
     <string name="output_text">Results</string>
+    <string name="port_text">1-1024</string>
+    <string name="host_text">127.0.0.1</string>
 </resources>

@@ -18,12 +18,13 @@
         android:hint="@string/host_field_hint"
         android:inputType="text"
         android:padding="8dp"
-        android:text="127.0.0.1"
+        android:text="@string/host_text"
         android:textColorHint="#757575"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:importantForAutofill="no" />
 
     <TextView
         android:id="@+id/output_field"
@@ -69,13 +70,14 @@
         android:ems="10"
         android:hint="@string/port_field_hint"
         android:inputType="number"
-        android:text="1-1000"
+        android:text="@string/port_text"
         android:textColorHint="#757575"
         android:textSize="20sp"
         android:background="@drawable/border"
         android:padding="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/host_field" />
+        app:layout_constraintTop_toBottomOf="@+id/host_field"
+        android:importantForAutofill="no" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

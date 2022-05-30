@@ -12,14 +12,16 @@ public class Scanner implements Runnable{
     private static InetAddress host;
     private static LinkedList<Integer> portList;
     private static final LinkedList<Integer> openPorts = new LinkedList<Integer>();
+    private static final LinkedList<Integer> closedPorts = new LinkedList<Integer>();
     private static final LinkedList<Integer> filteredPorts = new LinkedList<Integer>();
     private static final ReentrantLock mutex = new ReentrantLock();
     private static boolean stop;
 
-    public static LinkedList<Integer> scanPorts(InetAddress address, LinkedList<Integer> list) {
+    public static void scanPorts(InetAddress address, LinkedList<Integer> list) {
         host = address;
         portList = list;
         openPorts.clear();
+        closedPorts.clear();
         filteredPorts.clear();
         stop = false;
 
@@ -45,8 +47,6 @@ public class Scanner implements Runnable{
                 e.printStackTrace();
             }
         }
-
-        return openPorts;
     }
 
     public static void stopScan() {
@@ -88,12 +88,19 @@ public class Scanner implements Runnable{
                 mutex.unlock();
             } catch (IOException e) {
                 // connection failed
+                mutex.lock();
+                closedPorts.add(port);
+                mutex.unlock();
             }
         }
     }
 
     public static LinkedList<Integer> getOpenPorts() {
         return openPorts;
+    }
+
+    public static LinkedList<Integer> getClosedPorts() {
+        return closedPorts;
     }
 
     public static LinkedList<Integer> getFilteredPorts() {

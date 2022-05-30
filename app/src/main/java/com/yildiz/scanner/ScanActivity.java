@@ -62,11 +62,22 @@ public class ScanActivity extends AppCompatActivity {
                         String[] gap = str.split("-");
                         int first = Integer.parseInt(gap[0]);
                         int last = Integer.parseInt(gap[1]);
+
+                        if(gap.length != 2 || first > last || first < 1 || last > 65535) {
+                            throw new Exception();
+                        }
+
                         for(int j = first; j <= last; j++) {
                             portList.add(j);
                         }
                     } else {
-                        portList.add(Integer.parseInt(str));
+                        int num = Integer.parseInt(str);
+
+                        if(num < 1 || num > 65535) {
+                            throw new Exception();
+                        }
+
+                        portList.add(num);
                     }
                 }
             } catch (Exception e) {
@@ -74,9 +85,9 @@ public class ScanActivity extends AppCompatActivity {
                 return;
             }
 
-            int portNum = portList.size();
             Scanner.scanPorts(host, portList);
             LinkedList<Integer> openPorts = Scanner.getOpenPorts();
+            LinkedList<Integer> closedPorts = Scanner.getClosedPorts();
             LinkedList<Integer> filteredPorts = Scanner.getFilteredPorts();
 
             if(scanning) {
@@ -84,12 +95,25 @@ public class ScanActivity extends AppCompatActivity {
                 double end = System.currentTimeMillis();
                 StringBuilder output = new StringBuilder();
                 output.append("Scan completed in ").append((end - start) / 1000).append("s\n");
-                output.append(portNum - openPorts.size() - filteredPorts.size()).append(" closed ports\n");
+
+                if(closedPorts.size() > 10)  {
+                    output.append(closedPorts.size()).append(" closed ports\n");
+                } else {
+                    for(int port: closedPorts) {
+                        output.append("Port ").append(port).append(" is closed\n");
+                    }
+                }
+
+                if(filteredPorts.size() > 10)  {
+                    output.append(filteredPorts.size()).append(" filtered ports\n");
+                } else {
+                    for(int port: filteredPorts) {
+                        output.append("Port ").append(port).append(" is filtered\n");
+                    }
+                }
+
                 for(int port: openPorts) {
                     output.append("Port ").append(port).append(" is open\n");
-                }
-                for(int port: filteredPorts) {
-                    output.append("Port ").append(port).append(" is filtered\n");
                 }
 
                 handler.post(new Runnable() {
