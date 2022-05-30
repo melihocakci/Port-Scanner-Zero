@@ -1,21 +1,29 @@
 package com.yildiz.scanner;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.method.ScrollingMovementMethod;
+import android.view.ActionProvider;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import androidx.appcompat.widget.Toolbar;
 
 import java.net.InetAddress;
 import java.util.LinkedList;
 
 public class ScanActivity extends AppCompatActivity {
+    private Menu menu;
+    private Toolbar toolbar;
     private EditText host_field;
     private EditText port_field;
     private TextView output_field;
@@ -34,6 +42,23 @@ public class ScanActivity extends AppCompatActivity {
         output_field = findViewById(R.id.output_field);
         output_field.setMovementMethod(new ScrollingMovementMethod());
         button = findViewById(R.id.button);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if(id == R.id.menu_main_setting) {
+            Intent intent = new Intent(ScanActivity.this, SettingsActivity.class);
+            startActivity(intent);
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private class ScanHandler implements Runnable {
