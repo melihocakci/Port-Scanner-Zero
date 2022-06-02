@@ -12,5 +12,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "ZortScanner"
+rootProject.name = "Port-Scanner-Zero"
 include ':app'
