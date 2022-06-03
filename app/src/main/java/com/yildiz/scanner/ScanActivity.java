@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.method.ScrollingMovementMethod;
-import android.view.ActionProvider;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,6 +18,8 @@ import android.widget.TextView;
 import androidx.appcompat.widget.Toolbar;
 
 import java.net.InetAddress;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 
 public class ScanActivity extends AppCompatActivity {
@@ -32,13 +33,13 @@ public class ScanActivity extends AppCompatActivity {
     private boolean scanning;
     private final Handler handler = new Handler();
 
-    // Used to load the 'native_test' library on application startup.
+    // Used to load the 'portscanner' library on application startup.
     static {
-        System.loadLibrary("Port-Scanner-Zero");
+        System.loadLibrary("portscanner");
     }
 
     /**
-     * A native method that is implemented by the 'native_test' native library,
+     * A native method that is implemented by the 'portscanner' native library,
      * which is packaged with this application.
      */
     public native String getServByPort(int port);
@@ -150,11 +151,15 @@ public class ScanActivity extends AppCompatActivity {
                 return;
             }
 
+            // scan ports
             Scanner.scanPorts(host, portList);
+
+            // get results from Scanner class
             LinkedList<Integer> openPorts = Scanner.getOpenPorts();
             LinkedList<Integer> closedPorts = Scanner.getClosedPorts();
             LinkedList<Integer> filteredPorts = Scanner.getFilteredPorts();
 
+            LinkedList<Port> outputPorts = new LinkedList<>();
             if(scanning) {
                 // end timer
                 double end = System.currentTimeMillis();
@@ -164,21 +169,37 @@ public class ScanActivity extends AppCompatActivity {
                 if(closedPorts.size() > 10)  {
                     output.append(closedPorts.size()).append(" closed ports\n");
                 } else {
-                    for(int port: closedPorts) {
-                        output.append("Port ").append(port).append(" is closed\n");
+                    for(int portnum: closedPorts) {
+                        Port port = new Port(portnum, "closed", getServByPort(portnum));
+                        outputPorts.add(port);
                     }
                 }
 
                 if(filteredPorts.size() > 10)  {
                     output.append(filteredPorts.size()).append(" filtered ports\n");
                 } else {
-                    for(int port: filteredPorts) {
-                        output.append("Port ").append(port).append(" is filtered\n");
+                    for(int portnum: filteredPorts) {
+                        Port port = new Port(portnum, "filtered", getServByPort(portnum));
+                        outputPorts.add(port);
                     }
                 }
 
-                for(int port: openPorts) {
-                    output.append("Port ").append(port).append(": ").append(getServByPort(port)).append("\n");
+                for(int portnum: openPorts) {
+                    Port port = new Port(portnum, "open", getServByPort(portnum));
+                    outputPorts.add(port);
+                }
+
+
+                if(outputPorts.size() > 0) {
+                    output.append("\nResults:\n");
+
+                    Collections.sort(outputPorts, new sortByPortnum());
+
+                    for(Port port: outputPorts) {
+                        output.append(port.number).append(" | ")
+                                .append(port.state).append(" | ")
+                                .append(port.service).append("\n");
+                    }
                 }
 
                 handler.post(new Runnable() {
@@ -201,6 +222,13 @@ public class ScanActivity extends AppCompatActivity {
                     output_field.setText(message);
                 }
             });
+        }
+
+        private class sortByPortnum implements Comparator<Port> {
+            @Override
+            public int compare(Port port1, Port port2) {
+                return port1.number - port2.number;
+            }
         }
     }
 }
