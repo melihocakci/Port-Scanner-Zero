@@ -32,6 +32,17 @@ public class ScanActivity extends AppCompatActivity {
     private boolean scanning;
     private final Handler handler = new Handler();
 
+    // Used to load the 'native_test' library on application startup.
+    static {
+        System.loadLibrary("Port-Scanner-Zero");
+    }
+
+    /**
+     * A native method that is implemented by the 'native_test' native library,
+     * which is packaged with this application.
+     */
+    public native String getServByPort(int port);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,7 +72,36 @@ public class ScanActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public void toggleScan(View view) {
+        if(scanning) {
+            scanning = false;
+            Scanner.stopScan();
+            button.setText(R.string.button_start);
+            output_field.setText("Scan stopped");
+        } else {
+            if(host_field.getText().length() == 0 || port_field.getText().length() == 0) {
+                output_field.setText("Please fill the fields");
+                return;
+            }
+            // started scan
+            scanning = true;
+            // start timer
+            start = System.currentTimeMillis();
+            // close keyboard
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            // start scan handler
+            Runnable scanHandler = new ScanHandler();
+            Thread thread = new Thread(scanHandler);
+            thread.start();
+
+            button.setText(R.string.button_stop);
+            output_field.setText("Scanning");
+        }
+    }
+
     private class ScanHandler implements Runnable {
+
         @Override
         public void run() {
             // get host address from text field
@@ -138,7 +178,7 @@ public class ScanActivity extends AppCompatActivity {
                 }
 
                 for(int port: openPorts) {
-                    output.append("Port ").append(port).append(" is open\n");
+                    output.append("Port ").append(port).append(": ").append(getServByPort(port)).append("\n");
                 }
 
                 handler.post(new Runnable() {
@@ -161,34 +201,6 @@ public class ScanActivity extends AppCompatActivity {
                     output_field.setText(message);
                 }
             });
-        }
-    }
-
-    public void toggleScan(View view) {
-        if(scanning) {
-            scanning = false;
-            Scanner.stopScan();
-            button.setText(R.string.button_start);
-            output_field.setText("Scan stopped");
-        } else {
-            if(host_field.getText().length() == 0 || port_field.getText().length() == 0) {
-                output_field.setText("Please fill the fields");
-                return;
-            }
-            // started scan
-            scanning = true;
-            // start timer
-            start = System.currentTimeMillis();
-            // close keyboard
-            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-            // start scan handler
-            Runnable scanHandler = new ScanHandler();
-            Thread thread = new Thread(scanHandler);
-            thread.start();
-
-            button.setText(R.string.button_stop);
-            output_field.setText("Scanning");
         }
     }
 }

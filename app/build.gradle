@@ -3,12 +3,7 @@ plugins {
 }
 
 android {
-    /*
-    externalNativeBuild {
-        cmake {
-            version "3.23.0"
-        }
-    }*/
+    ndkVersion "24.0.8215888"
 
     compileSdk 32
 
@@ -28,9 +23,17 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    externalNativeBuild {
+        cmake {
+            path file('src/main/cpp/CMakeLists.txt')
+            version "3.18.1"
+        }
     }
 }
 
