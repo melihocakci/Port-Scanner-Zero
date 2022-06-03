@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="scan_types">
+        <item>Common Scan</item>
+        <item>Quick Scan</item>
+        <item>Full Scan</item>
+        <item>Custom Scan</item>
+    </string-array>
+
+    <string-array name="ports_by_scan_type">
+        <item>7,21-23,25,53,80,110,111,113,135,139,143,199,256,443,445,465,554,587,993,995,1720,1723,3306,3389,5269,5900,8000,8080,8888,10257</item>
+        <item>1-1024</item>
+        <item>1-65535</item>
+        <item></item>
+    </string-array>
+</resources>

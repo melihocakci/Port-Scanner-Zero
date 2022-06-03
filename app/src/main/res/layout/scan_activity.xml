@@ -4,20 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ScanActivity"
-    android:background="@color/white">
+    android:background="@color/white"
+    tools:context=".ScanActivity">
 
 
     <EditText
         android:id="@+id/host_field"
         android:layout_width="0dp"
         android:layout_height="50dp"
-        android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:background="@drawable/border"
         android:ems="10"
         android:hint="@string/host_field_hint"
+        android:importantForAutofill="no"
         android:inputType="text"
         android:padding="8dp"
         android:text="@string/host_text"
@@ -25,17 +26,15 @@
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:importantForAutofill="no" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/output_field"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="8dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
         android:background="@drawable/border"
         android:padding="8dp"
         android:scrollbars="vertical"
@@ -45,23 +44,41 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button" />
+        app:layout_constraintTop_toBottomOf="@+id/scan_progressBar" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button"
         android:layout_width="0dp"
-        android:layout_height="55dp"
-        android:layout_marginStart="16dp"
+        android:layout_height="50dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:onClick="toggleScan"
         android:backgroundTint="@color/black"
+        android:onClick="toggleScan"
         android:text="@string/button_start"
         android:textColor="@color/white"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/scan_type_spinner"
+        app:layout_constraintTop_toBottomOf="@+id/port_field" />
+
+    <Spinner
+        android:id="@+id/scan_type_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/port_field" />
+
+    <ProgressBar
+        android:id="@+id/scan_progressBar"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="8dp"
+        android:foregroundTint="@color/black"
+        app:layout_constraintTop_toBottomOf="@+id/button" />
 
     <EditText
         android:id="@+id/port_field"
@@ -70,19 +87,19 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
+        android:background="@drawable/border"
         android:digits="0123456789,-"
         android:ems="10"
         android:hint="@string/port_field_hint"
+        android:importantForAutofill="no"
         android:inputType="number"
+        android:padding="8dp"
         android:text="@string/port_text"
         android:textColorHint="#757575"
         android:textSize="20sp"
-        android:background="@drawable/border"
-        android:padding="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/host_field"
-        android:importantForAutofill="no" />
+        app:layout_constraintTop_toBottomOf="@+id/host_field" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

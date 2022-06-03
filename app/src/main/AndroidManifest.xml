@@ -13,7 +13,8 @@
         android:theme="@style/Theme.Test">
         <activity
             android:name=".SettingsActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".ScanActivity"/>
         <activity
             android:name=".ScanActivity"
             android:exported="true">

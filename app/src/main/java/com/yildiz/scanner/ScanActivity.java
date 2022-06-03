@@ -12,8 +12,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import androidx.appcompat.widget.Toolbar;
 
@@ -22,9 +25,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 
-public class ScanActivity extends AppCompatActivity {
-    private Menu menu;
-    private Toolbar toolbar;
+public class ScanActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+    private Spinner scanTypeSpinner;
     private EditText host_field;
     private EditText port_field;
     private TextView output_field;
@@ -49,11 +51,18 @@ public class ScanActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.scan_activity);
 
+        scanTypeSpinner = findViewById(R.id.scan_type_spinner);
         host_field = findViewById(R.id.host_field);
         port_field = findViewById(R.id.port_field);
         output_field = findViewById(R.id.output_field);
         output_field.setMovementMethod(new ScrollingMovementMethod());
         button = findViewById(R.id.button);
+
+        ArrayAdapter<CharSequence> scanTypeAdapter = ArrayAdapter.createFromResource(this, R.array.scan_types, android.R.layout.simple_spinner_item);
+        scanTypeAdapter.setDropDownViewResource(androidx.appcompat.R.layout.support_simple_spinner_dropdown_item);
+        scanTypeSpinner.setAdapter(scanTypeAdapter);
+        scanTypeSpinner.setOnItemSelectedListener(this);
+
     }
 
     @Override
@@ -64,13 +73,24 @@ public class ScanActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        if(id == R.id.menu_main_setting) {
-            Intent intent = new Intent(ScanActivity.this, SettingsActivity.class);
-            startActivity(intent);
+        switch (item.getItemId()) {
+            case R.id.menu_main_setting:
+                Intent intent = new Intent(ScanActivity.this, SettingsActivity.class);
+                startActivity(intent);
+                break;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        String[] texts = getResources().getStringArray(R.array.ports_by_scan_type);
+        port_field.setText(texts[i]);
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
     }
 
     public void toggleScan(View view) {
