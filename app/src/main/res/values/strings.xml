@@ -7,4 +7,7 @@
     <string name="output_text">Results</string>
     <string name="port_text">1-1024</string>
     <string name="host_text">127.0.0.1</string>
+
+    <string name="thread_count_preference_title">Maximum Number of Threads</string>
+    <string name="thread_count_preference_summary">Enter the number of threads you want to run.</string>
 </resources>
