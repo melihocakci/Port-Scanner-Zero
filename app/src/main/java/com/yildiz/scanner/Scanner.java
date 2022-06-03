@@ -11,9 +11,9 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Scanner implements Runnable{
     private static InetAddress host;
     private static LinkedList<Integer> portList;
-    private static final LinkedList<Integer> openPorts = new LinkedList<Integer>();
-    private static final LinkedList<Integer> closedPorts = new LinkedList<Integer>();
-    private static final LinkedList<Integer> filteredPorts = new LinkedList<Integer>();
+    private static final LinkedList<Integer> openPorts = new LinkedList<>();
+    private static final LinkedList<Integer> closedPorts = new LinkedList<>();
+    private static final LinkedList<Integer> filteredPorts = new LinkedList<>();
     private static final ReentrantLock mutex = new ReentrantLock();
     private static boolean stop;
 
@@ -31,7 +31,7 @@ public class Scanner implements Runnable{
             threadNum = 128;
         }
 
-        LinkedList<Thread> threads = new LinkedList<Thread>();
+        LinkedList<Thread> threads = new LinkedList<>();
         // launch threads
         for(int i = 0; i < threadNum; i++) {
             Thread thread = new Thread(new Scanner());
