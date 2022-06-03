@@ -129,6 +129,7 @@ public class ScanActivity extends AppCompatActivity {
                         int first = Integer.parseInt(gap[0]);
                         int last = Integer.parseInt(gap[1]);
 
+                        // input control
                         if(gap.length != 2 || first > last || first < 1 || last > 65535) {
                             throw new Exception();
                         }
@@ -139,6 +140,7 @@ public class ScanActivity extends AppCompatActivity {
                     } else {
                         int num = Integer.parseInt(str);
 
+                        // input control
                         if(num < 1 || num > 65535) {
                             throw new Exception();
                         }
@@ -170,7 +172,11 @@ public class ScanActivity extends AppCompatActivity {
                     output.append(closedPorts.size()).append(" closed ports\n");
                 } else {
                     for(int portnum: closedPorts) {
-                        Port port = new Port(portnum, "closed", getServByPort(portnum));
+                        Port port = new Port();
+                        port.number = portnum;
+                        port.state = "closed";
+                        port.service = getServByPort(portnum);
+
                         outputPorts.add(port);
                     }
                 }
@@ -179,21 +185,29 @@ public class ScanActivity extends AppCompatActivity {
                     output.append(filteredPorts.size()).append(" filtered ports\n");
                 } else {
                     for(int portnum: filteredPorts) {
-                        Port port = new Port(portnum, "filtered", getServByPort(portnum));
+                        Port port = new Port();
+                        port.number = portnum;
+                        port.state = "filtered";
+                        port.service = getServByPort(portnum);
+
                         outputPorts.add(port);
                     }
                 }
 
                 for(int portnum: openPorts) {
-                    Port port = new Port(portnum, "open", getServByPort(portnum));
+                    Port port = new Port();
+                    port.number = portnum;
+                    port.state = "open";
+                    port.service = getServByPort(portnum);
+
                     outputPorts.add(port);
                 }
 
 
-                if(outputPorts.size() > 0) {
-                    output.append("\nResults:\n");
+                if(!outputPorts.isEmpty()) {
+                    output.append("Results:\n");
 
-                    Collections.sort(outputPorts, new sortByPortnum());
+                    Collections.sort(outputPorts, new comparePorts());
 
                     for(Port port: outputPorts) {
                         output.append(port.number).append(" | ")
@@ -224,7 +238,7 @@ public class ScanActivity extends AppCompatActivity {
             });
         }
 
-        private class sortByPortnum implements Comparator<Port> {
+        private class comparePorts implements Comparator<Port> {
             @Override
             public int compare(Port port1, Port port2) {
                 return port1.number - port2.number;
