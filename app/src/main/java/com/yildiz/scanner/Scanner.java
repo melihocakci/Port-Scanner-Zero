@@ -15,7 +15,7 @@ public class Scanner implements Runnable{
     private static final LinkedList<Integer> closedPorts = new LinkedList<>();
     private static final LinkedList<Integer> filteredPorts = new LinkedList<>();
     private static final ReentrantLock mutex = new ReentrantLock();
-    private static boolean stop;
+    private static boolean stopScan;
 
     public static void scanPorts(InetAddress address, LinkedList<Integer> list) {
         host = address;
@@ -23,7 +23,7 @@ public class Scanner implements Runnable{
         openPorts.clear();
         closedPorts.clear();
         filteredPorts.clear();
-        stop = false;
+        stopScan = false;
 
         // decide on thread number
         int threadNum = (int) Math.sqrt(list.size());
@@ -51,7 +51,7 @@ public class Scanner implements Runnable{
 
     public static void stopScan() {
         mutex.lock();
-        stop = true;
+        stopScan = true;
         mutex.unlock();
     }
 
@@ -60,8 +60,8 @@ public class Scanner implements Runnable{
         while(true) {
             // lock mutex
             mutex.lock();
-            // return if port list is empty
-            if(stop || portList.isEmpty()) {
+            // return if port list is empty or scan has to stop
+            if(stopScan || portList.isEmpty()) {
                 mutex.unlock();
                 return;
             }
@@ -80,14 +80,13 @@ public class Scanner implements Runnable{
                 mutex.lock();
                 openPorts.add(port);
                 mutex.unlock();
-                //System.out.println("Port " + port + " is open");
             } catch (SocketTimeoutException e) {
-                // timeout
+                // connection timeout
                 mutex.lock();
                 filteredPorts.add(port);
                 mutex.unlock();
             } catch (IOException e) {
-                // connection failed
+                // connection rejected
                 mutex.lock();
                 closedPorts.add(port);
                 mutex.unlock();

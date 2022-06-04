@@ -23,6 +23,7 @@ import androidx.appcompat.widget.Toolbar;
 import java.net.InetAddress;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 public class ScanActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
@@ -121,6 +122,7 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
         }
     }
 
+    // thread to handle scans
     private class ScanHandler implements Runnable {
 
         @Override
@@ -142,6 +144,7 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
             // get port list
             LinkedList<Integer> portList = new LinkedList<Integer>();
             try {
+                HashMap<Integer, Boolean> hashMap = new HashMap<>();
                 String[] ports = port_input.split(",");
                 for(String str : ports) {
                     if(str.contains("-")) {
@@ -155,17 +158,23 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
                         }
 
                         for(int j = first; j <= last; j++) {
+                            if(hashMap.get(j) != null) {
+                                throw new Exception();
+                            }
+
                             portList.add(j);
+                            hashMap.put(j, true);
                         }
                     } else {
                         int num = Integer.parseInt(str);
 
                         // input control
-                        if(num < 1 || num > 65535) {
+                        if(num < 1 || num > 65535 || hashMap.get(num) != null) {
                             throw new Exception();
                         }
 
                         portList.add(num);
+                        hashMap.put(num, true);
                     }
                 }
             } catch (Exception e) {
@@ -181,13 +190,19 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
             LinkedList<Integer> closedPorts = Scanner.getClosedPorts();
             LinkedList<Integer> filteredPorts = Scanner.getFilteredPorts();
 
-            LinkedList<Port> outputPorts = new LinkedList<>();
+            // print results
             if(scanning) {
                 // end timer
                 double end = System.currentTimeMillis();
+
+                // build output string
                 StringBuilder output = new StringBuilder();
                 output.append("Scan completed in ").append((end - start) / 1000).append("s\n");
 
+                // ports to be listed
+                LinkedList<Port> outputPorts = new LinkedList<>();
+
+                // closed ports
                 if(closedPorts.size() > 10)  {
                     output.append(closedPorts.size()).append(" closed ports\n");
                 } else {
@@ -201,6 +216,7 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
                     }
                 }
 
+                // filtered ports
                 if(filteredPorts.size() > 10)  {
                     output.append(filteredPorts.size()).append(" filtered ports\n");
                 } else {
@@ -214,6 +230,7 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
                     }
                 }
 
+                // open ports
                 for(int portnum: openPorts) {
                     Port port = new Port();
                     port.number = portnum;
@@ -223,7 +240,7 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
                     outputPorts.add(port);
                 }
 
-
+                // add ports to output
                 if(!outputPorts.isEmpty()) {
                     output.append("Results:\n");
 
@@ -236,6 +253,7 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
                     }
                 }
 
+                // print resutls
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -247,6 +265,7 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         }
 
+        // print error and stop scan
         private void error(String message) {
             handler.post(new Runnable() {
                 @Override
