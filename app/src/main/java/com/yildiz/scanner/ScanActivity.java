@@ -33,6 +33,7 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
     private EditText host_field;
     private EditText port_field;
     private TextView output_field;
+    private TextView scannedText;
     private Button button;
     private double start;
     private boolean scanning;
@@ -61,6 +62,7 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
         output_field = findViewById(R.id.output_field);
         output_field.setMovementMethod(new ScrollingMovementMethod());
         button = findViewById(R.id.button);
+        scannedText = findViewById(R.id.scanned_text);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,12 +136,18 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
         }
     }
 
+    void updateScanProgress() {
+        scanProgressBar.setProgress(scanProgressBar.getMax() - Scanner.getPortCount());
+        String text = scanProgressBar.getProgress() + " / " + scanProgressBar.getMax();
+        scannedText.setText(text);
+    }
+
     //to update progress bar
     Runnable progressBarUpdater = new Runnable() {
         @Override
         public void run() {
             try {
-                scanProgressBar.setProgress(scanProgressBar.getMax() - Scanner.getPortCount());
+                updateScanProgress();
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
