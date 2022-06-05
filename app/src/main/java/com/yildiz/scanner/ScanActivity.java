@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import androidx.appcompat.widget.Toolbar;
@@ -28,6 +29,7 @@ import java.util.LinkedList;
 
 public class ScanActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private Spinner scanTypeSpinner;
+    private ProgressBar scanProgressBar;
     private EditText host_field;
     private EditText port_field;
     private TextView output_field;
@@ -53,6 +55,7 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
         setContentView(R.layout.scan_activity);
 
         scanTypeSpinner = findViewById(R.id.scan_type_spinner);
+        scanProgressBar = findViewById(R.id.scan_progressBar);
         host_field = findViewById(R.id.host_field);
         port_field = findViewById(R.id.port_field);
         output_field = findViewById(R.id.output_field);
@@ -122,6 +125,21 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
         }
     }
 
+    //to update progress bar
+    Runnable progressBarUpdater = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                scanProgressBar.setProgress(scanProgressBar.getMax() - Scanner.getPortCount());
+            } finally {
+                if(Scanner.getPortCount() == 0) {
+                    handler.removeCallbacks(this);
+                } else
+                    handler.postDelayed(this, 500);
+            }
+        }
+    };
+
     // thread to handle scans
     private class ScanHandler implements Runnable {
 
@@ -182,8 +200,15 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
                 return;
             }
 
+            // start updating progress bar
+            scanProgressBar.setMax(portList.size());
+            //scanProgressBar.setVisibility(View.VISIBLE);
+            handler.post(progressBarUpdater);
             // scan ports
             Scanner.scanPorts(host, portList);
+
+            // setting progress bar's visibility "GONE"
+            //scanProgressBar.setVisibility(View.GONE);
 
             // get results from Scanner class
             LinkedList<Integer> openPorts = Scanner.getOpenPorts();
