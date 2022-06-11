@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
     tools:context=".ScanActivity">
 
 
@@ -22,8 +21,6 @@
         android:inputType="text"
         android:padding="8dp"
         android:text="@string/host_text"
-        android:textColor="@color/black"
-        android:textColorHint="#757575"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -40,7 +37,6 @@
         android:padding="8dp"
         android:scrollbars="vertical"
         android:text="@string/output_text"
-        android:textColor="#000000"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -53,9 +49,7 @@
         android:layout_height="50dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:backgroundTint="@color/black"
         android:text="@string/button_start"
-        android:textColor="@color/white"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/scan_type_spinner"
@@ -63,6 +57,7 @@
 
     <Spinner
         android:id="@+id/scan_type_spinner"
+        style="@style/Widget.AppCompat.Spinner.DropDown"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
         android:layout_marginLeft="16dp"
@@ -79,7 +74,6 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="8dp"
-        android:foregroundTint="@color/black"
         app:layout_constraintEnd_toStartOf="@+id/scanned_text"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button" />
@@ -91,7 +85,6 @@
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="6dp"
         android:textAlignment="center"
-        android:textColor="@color/black"
         android:text="- / -"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button" />
@@ -111,8 +104,6 @@
         android:inputType="number"
         android:padding="8dp"
         android:text="@string/port_text"
-        android:textColor="@color/black"
-        android:textColorHint="#757575"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
