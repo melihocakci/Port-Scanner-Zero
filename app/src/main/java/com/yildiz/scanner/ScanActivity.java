@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import androidx.appcompat.widget.Toolbar;
@@ -28,9 +29,11 @@ import java.util.LinkedList;
 
 public class ScanActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private Spinner scanTypeSpinner;
+    private ProgressBar scanProgressBar;
     private EditText host_field;
     private EditText port_field;
     private TextView output_field;
+    private TextView scannedText;
     private Button button;
     private double start;
     private boolean scanning;
@@ -53,11 +56,15 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
         setContentView(R.layout.scan_activity);
 
         scanTypeSpinner = findViewById(R.id.scan_type_spinner);
+        scanProgressBar = findViewById(R.id.scan_progressBar);
         host_field = findViewById(R.id.host_field);
         port_field = findViewById(R.id.port_field);
         output_field = findViewById(R.id.output_field);
         output_field.setMovementMethod(new ScrollingMovementMethod());
         button = findViewById(R.id.button);
+        scannedText = findViewById(R.id.scanned_text);
+
+        button.setOnClickListener(this::toggleScan);
 
         ArrayAdapter<CharSequence> scanTypeAdapter = ArrayAdapter.createFromResource(this, R.array.scan_types, android.R.layout.simple_spinner_item);
         scanTypeAdapter.setDropDownViewResource(androidx.appcompat.R.layout.support_simple_spinner_dropdown_item);
@@ -97,6 +104,8 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
     public void toggleScan(View view) {
         if(scanning) {
             scanning = false;
+            handler.removeCallbacks(progressBarUpdater);
+            scanProgressBar.setProgress(0);
             Scanner.stopScan();
             button.setText(R.string.button_start);
             output_field.setText("Scan stopped");
@@ -121,6 +130,29 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
             output_field.setText("Scanning");
         }
     }
+
+    void updateScanProgress() {
+        scanProgressBar.setProgress(scanProgressBar.getMax() - Scanner.getPortCount());
+        String text = scanProgressBar.getProgress() + " / " + scanProgressBar.getMax();
+        scannedText.setText(text);
+    }
+
+    //to update progress bar
+    Runnable progressBarUpdater = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                updateScanProgress();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if(Scanner.getPortCount() == 0) {
+                    handler.removeCallbacks(this);
+                } else
+                    handler.postDelayed(this, 200);
+            }
+        }
+    };
 
     // thread to handle scans
     private class ScanHandler implements Runnable {
@@ -182,6 +214,9 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
                 return;
             }
 
+            // start updating progress bar
+            scanProgressBar.setMax(portList.size());
+            handler.post(progressBarUpdater);
             // scan ports
             Scanner.scanPorts(host, portList);
 
@@ -204,7 +239,7 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
 
                 // closed ports
                 if(closedPorts.size() > 10)  {
-                    output.append(closedPorts.size()).append(" closed ports\n");
+                    output.append("Not listed: ").append(closedPorts.size()).append(" closed ports\n");
                 } else {
                     for(int portnum: closedPorts) {
                         Port port = new Port();
@@ -218,7 +253,7 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
 
                 // filtered ports
                 if(filteredPorts.size() > 10)  {
-                    output.append(filteredPorts.size()).append(" filtered ports\n");
+                    output.append("Not listed: ").append(filteredPorts.size()).append(" filtered ports\n");
                 } else {
                     for(int portnum: filteredPorts) {
                         Port port = new Port();
@@ -242,38 +277,32 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
 
                 // add ports to output
                 if(!outputPorts.isEmpty()) {
-                    output.append("Results:\n");
+                    output.append("##################\n").append("PORT | STATUS | SERVICE\n");
 
                     Collections.sort(outputPorts, new comparePorts());
 
                     for(Port port: outputPorts) {
-                        output.append(port.number).append(" | ")
+                        output.append(port.number).append("/tcp | ")
                                 .append(port.state).append(" | ")
                                 .append(port.service).append("\n");
                     }
                 }
 
                 // print resutls
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        scanning = false;
-                        button.setText(R.string.button_start);
-                        output_field.setText(output.toString());
-                    }
+                handler.post(() -> {
+                    scanning = false;
+                    button.setText(R.string.button_start);
+                    output_field.setText(output.toString());
                 });
             }
         }
 
         // print error and stop scan
         private void error(String message) {
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    scanning = false;
-                    button.setText(R.string.button_start);
-                    output_field.setText(message);
-                }
+            handler.post(() -> {
+                scanning = false;
+                button.setText(R.string.button_start);
+                output_field.setText(message);
             });
         }
 

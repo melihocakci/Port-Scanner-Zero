@@ -105,4 +105,11 @@ public class Scanner implements Runnable{
     public static LinkedList<Integer> getFilteredPorts() {
         return filteredPorts;
     }
+
+    public static int getPortCount() {
+        mutex.lock();
+        int count = portList.size();
+        mutex.unlock();
+        return count;
+    }
 }
