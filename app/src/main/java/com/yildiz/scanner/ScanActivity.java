@@ -64,12 +64,7 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
         button = findViewById(R.id.button);
         scannedText = findViewById(R.id.scanned_text);
 
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toggleScan(view);
-            }
-        });
+        button.setOnClickListener(this::toggleScan);
 
         ArrayAdapter<CharSequence> scanTypeAdapter = ArrayAdapter.createFromResource(this, R.array.scan_types, android.R.layout.simple_spinner_item);
         scanTypeAdapter.setDropDownViewResource(androidx.appcompat.R.layout.support_simple_spinner_dropdown_item);
@@ -294,26 +289,20 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
                 }
 
                 // print resutls
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        scanning = false;
-                        button.setText(R.string.button_start);
-                        output_field.setText(output.toString());
-                    }
+                handler.post(() -> {
+                    scanning = false;
+                    button.setText(R.string.button_start);
+                    output_field.setText(output.toString());
                 });
             }
         }
 
         // print error and stop scan
         private void error(String message) {
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    scanning = false;
-                    button.setText(R.string.button_start);
-                    output_field.setText(message);
-                }
+            handler.post(() -> {
+                scanning = false;
+                button.setText(R.string.button_start);
+                output_field.setText(message);
             });
         }
 
