@@ -245,7 +245,7 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
 
                 // closed ports
                 if(closedPorts.size() > 10)  {
-                    output.append(closedPorts.size()).append(" closed ports\n");
+                    output.append("Not listed: ").append(closedPorts.size()).append(" closed ports\n");
                 } else {
                     for(int portnum: closedPorts) {
                         Port port = new Port();
@@ -259,7 +259,7 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
 
                 // filtered ports
                 if(filteredPorts.size() > 10)  {
-                    output.append(filteredPorts.size()).append(" filtered ports\n");
+                    output.append("Not listed: ").append(filteredPorts.size()).append(" filtered ports\n");
                 } else {
                     for(int portnum: filteredPorts) {
                         Port port = new Port();
@@ -283,12 +283,12 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
 
                 // add ports to output
                 if(!outputPorts.isEmpty()) {
-                    output.append("Results:\n");
+                    output.append("##################\n").append("PORT | STATUS | SERVICE\n");
 
                     Collections.sort(outputPorts, new comparePorts());
 
                     for(Port port: outputPorts) {
-                        output.append(port.number).append(" | ")
+                        output.append(port.number).append("/tcp | ")
                                 .append(port.state).append(" | ")
                                 .append(port.service).append("\n");
                     }

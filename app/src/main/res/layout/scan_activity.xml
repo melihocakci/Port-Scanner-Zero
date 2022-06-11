@@ -9,6 +9,7 @@
 
     <EditText
         android:id="@+id/host_field"
+        style="@style/Widget.AppCompat.EditText"
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:layout_marginStart="16dp"
@@ -45,6 +46,7 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button"
+        style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:layout_marginTop="16dp"
@@ -80,6 +82,7 @@
 
     <TextView
         android:id="@+id/scanned_text"
+        style="@style/Widget.AppCompat.TextView"
         android:layout_width="96dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
@@ -91,8 +94,9 @@
 
     <EditText
         android:id="@+id/port_field"
+        style="@style/Widget.AppCompat.EditText"
         android:layout_width="0dp"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
