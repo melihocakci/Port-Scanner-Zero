@@ -153,7 +153,6 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
             } finally {
                 if(Scanner.getPortCount() == 0) {
                     handler.removeCallbacks(this);
-                    scanProgressBar.setProgress(0);
                 } else
                     handler.postDelayed(this, 200);
             }
