@@ -62,9 +62,11 @@
         style="@style/Widget.AppCompat.Spinner.DropDown"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
-        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:popupTheme="@style/Widget.AppCompat.Spinner"
+        android:contentDescription="@string/scan_type_text"
+        android:entries="@array/scan_types"
+        android:textColor="@color/black"
         app:layout_constraintBottom_toTopOf="@+id/scan_progressBar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/port_field" />
