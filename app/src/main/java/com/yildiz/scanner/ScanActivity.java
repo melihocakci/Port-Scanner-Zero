@@ -19,7 +19,6 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
-import androidx.appcompat.widget.Toolbar;
 
 import java.net.InetAddress;
 import java.util.Collections;
@@ -83,7 +82,7 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_main_setting:
-                Intent intent = new Intent(ScanActivity.this, SettingsActivity.class);
+                Intent intent = new Intent(this, SettingsActivity.class);
                 startActivity(intent);
                 break;
         }
