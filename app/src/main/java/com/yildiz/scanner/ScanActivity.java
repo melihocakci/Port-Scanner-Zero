@@ -2,9 +2,11 @@ package com.yildiz.scanner;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.method.ScrollingMovementMethod;
@@ -19,7 +21,6 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
-import androidx.appcompat.widget.Toolbar;
 
 import java.net.InetAddress;
 import java.util.Collections;
@@ -38,6 +39,9 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
     private double start;
     private boolean scanning;
     private final Handler handler = new Handler();
+
+    private int timeout;
+    private int maxThreadNum;
 
     // Used to load the 'portscanner' library on application startup.
     static {
@@ -83,7 +87,7 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_main_setting:
-                Intent intent = new Intent(ScanActivity.this, SettingsActivity.class);
+                Intent intent = new Intent(this, SettingsActivity.class);
                 startActivity(intent);
                 break;
         }
@@ -105,7 +109,6 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
         if(scanning) {
             scanning = false;
             handler.removeCallbacks(progressBarUpdater);
-            scanProgressBar.setProgress(0);
             Scanner.stopScan();
             button.setText(R.string.button_start);
             output_field.setText("Scan stopped");
@@ -118,6 +121,13 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
             scanning = true;
             // start timer
             start = System.currentTimeMillis();
+            // get preferences
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            String pref1 = prefs.getString("max_thread_num", "128");
+            maxThreadNum = Integer.parseInt(pref1);
+
+            String pref2 = prefs.getString("timeout", "1000");
+            timeout = Integer.parseInt(pref2);
             // close keyboard
             InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
@@ -148,8 +158,9 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
             } finally {
                 if(Scanner.getPortCount() == 0) {
                     handler.removeCallbacks(this);
-                } else
+                } else {
                     handler.postDelayed(this, 200);
+                }
             }
         }
     };
@@ -217,8 +228,9 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
             // start updating progress bar
             scanProgressBar.setMax(portList.size());
             handler.post(progressBarUpdater);
+
             // scan ports
-            Scanner.scanPorts(host, portList);
+            Scanner.scanPorts(host, portList, maxThreadNum, timeout);
 
             // get results from Scanner class
             LinkedList<Integer> openPorts = Scanner.getOpenPorts();
