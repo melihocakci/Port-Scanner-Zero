@@ -34,5 +34,18 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
             }
         });
+
+        EditTextPreference pref1 = findPreference("timeout");
+
+        assert pref1 != null;
+
+        pref1.setOnBindEditTextListener(new EditTextPreference.OnBindEditTextListener() {
+            @Override
+            public void onBindEditText(@NonNull EditText editText) {
+                editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+                editText.setFilters(new InputFilter[]{ new InputFilterMinMax(1, 2000)});
+
+            }
+        });
     }
 }

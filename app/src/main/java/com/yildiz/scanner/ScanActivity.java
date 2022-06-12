@@ -40,6 +40,9 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
     private boolean scanning;
     private final Handler handler = new Handler();
 
+    private int timeout;
+    private int maxThreadNum;
+
     // Used to load the 'portscanner' library on application startup.
     static {
         System.loadLibrary("portscanner");
@@ -119,6 +122,13 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
             scanning = true;
             // start timer
             start = System.currentTimeMillis();
+            // get preferences
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            String pref1 = prefs.getString("max_thread_num", "128");
+            maxThreadNum = Integer.parseInt(pref1);
+
+            String pref2 = prefs.getString("timeout", "1000");
+            timeout = Integer.parseInt(pref2);
             // close keyboard
             InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
@@ -219,12 +229,8 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
             scanProgressBar.setMax(portList.size());
             handler.post(progressBarUpdater);
 
-            SharedPreferences prefs = getSharedPreferences("scanner_preferences", MODE_PRIVATE);
-            String str = prefs.getString("max_thread_num", "128");
-            int maxThreadNum = Integer.parseInt(str);
-
             // scan ports
-            Scanner.scanPorts(host, portList, maxThreadNum);
+            Scanner.scanPorts(host, portList, maxThreadNum, timeout);
 
             // get results from Scanner class
             LinkedList<Integer> openPorts = Scanner.getOpenPorts();
