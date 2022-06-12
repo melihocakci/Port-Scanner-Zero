@@ -4,11 +4,11 @@
 
     <EditTextPreference
         android:key="max_thread_num"
-        android:summary="Maximum number of threads to be used while scanning (1-255)"
-        android:title="Max number of threads" />
+        android:summary="Maximum number of threads to be used during scan"
+        android:title="Max number of threads (1-255)" />
 
     <EditTextPreference
         android:key="timeout"
-        android:summary="Timeout duration of each thread in milliseconds (1-2000)"
-        android:title="Timeout" />
+        android:summary="Timeout duration of each thread in milliseconds"
+        android:title="Timeout (1-2000)" />
 </PreferenceScreen>
