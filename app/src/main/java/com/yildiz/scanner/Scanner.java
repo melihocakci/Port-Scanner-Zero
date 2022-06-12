@@ -17,7 +17,7 @@ public class Scanner implements Runnable{
     private static final ReentrantLock mutex = new ReentrantLock();
     private static boolean stopScan;
 
-    public static void scanPorts(InetAddress address, LinkedList<Integer> list) {
+    public static void scanPorts(InetAddress address, LinkedList<Integer> list, int maxThreadNum) {
         host = address;
         portList = list;
         openPorts.clear();
@@ -27,8 +27,8 @@ public class Scanner implements Runnable{
 
         // decide on thread number
         int threadNum = (int) Math.sqrt(list.size());
-        if(threadNum > 128) {
-            threadNum = 128;
+        if(threadNum > maxThreadNum) {
+            threadNum = maxThreadNum;
         }
 
         LinkedList<Thread> threads = new LinkedList<>();

@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <androidx.preference.EditTextPreference
-        android:defaultValue="true"
-        android:inputType="number"
-        android:key="edit_text_preference_1"
-        android:selectAllOnFocus="true"
-        android:singleLine="true"
+    <EditTextPreference
+        android:key="max_thread_num"
         android:summary="Maximum number of threads to be used while scanning"
         android:title="Max number of threads" />
-</androidx.preference.PreferenceScreen>
+</PreferenceScreen>

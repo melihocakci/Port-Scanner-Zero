@@ -2,9 +2,11 @@ package com.yildiz.scanner;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.method.ScrollingMovementMethod;
@@ -216,8 +218,13 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
             // start updating progress bar
             scanProgressBar.setMax(portList.size());
             handler.post(progressBarUpdater);
+
+            SharedPreferences prefs = getSharedPreferences("scanner_preferences", MODE_PRIVATE);
+            String str = prefs.getString("max_thread_num", "128");
+            int maxThreadNum = Integer.parseInt(str);
+
             // scan ports
-            Scanner.scanPorts(host, portList);
+            Scanner.scanPorts(host, portList, maxThreadNum);
 
             // get results from Scanner class
             LinkedList<Integer> openPorts = Scanner.getOpenPorts();
