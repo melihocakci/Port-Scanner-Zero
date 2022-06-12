@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <integer name="thread_count">32</integer>
+    <integer name="thread_count">128</integer>
 </resources>

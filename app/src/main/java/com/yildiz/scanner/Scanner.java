@@ -11,15 +11,18 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Scanner implements Runnable{
     private static InetAddress host;
     private static LinkedList<Integer> portList;
+    private static int timeout;
     private static final LinkedList<Integer> openPorts = new LinkedList<>();
     private static final LinkedList<Integer> closedPorts = new LinkedList<>();
     private static final LinkedList<Integer> filteredPorts = new LinkedList<>();
     private static final ReentrantLock mutex = new ReentrantLock();
     private static boolean stopScan;
 
-    public static void scanPorts(InetAddress address, LinkedList<Integer> list) {
+    public static void scanPorts(InetAddress address, LinkedList<Integer> list, int maxThreadNum, int num) {
         host = address;
         portList = list;
+        timeout = num;
+
         openPorts.clear();
         closedPorts.clear();
         filteredPorts.clear();
@@ -27,8 +30,8 @@ public class Scanner implements Runnable{
 
         // decide on thread number
         int threadNum = (int) Math.sqrt(list.size());
-        if(threadNum > 128) {
-            threadNum = 128;
+        if(threadNum > maxThreadNum) {
+            threadNum = maxThreadNum;
         }
 
         LinkedList<Thread> threads = new LinkedList<>();
@@ -74,7 +77,7 @@ public class Scanner implements Runnable{
             mutex.unlock();
             try {
                 // start connection
-                socket.connect(new InetSocketAddress(host, port), 1000);
+                socket.connect(new InetSocketAddress(host, port), timeout);
                 // connection successful, end connection
                 socket.close();
                 mutex.lock();
