@@ -1,9 +1,11 @@
 package com.yildiz.scanner;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,10 +17,13 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.appcompat.widget.Toolbar;
 
 import java.net.InetAddress;
@@ -70,6 +75,8 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
         scanTypeAdapter.setDropDownViewResource(androidx.appcompat.R.layout.support_simple_spinner_dropdown_item);
         scanTypeSpinner.setAdapter(scanTypeAdapter);
         scanTypeSpinner.setOnItemSelectedListener(this);
+
+
 
     }
 
@@ -153,6 +160,24 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         }
     };
+
+    private void showEulaAlert() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View eulaView = this.getLayoutInflater().inflate(R.layout.eula_alert_layout, null);
+        builder.setView(eulaView);
+        CheckBox agreeCheckBox = (CheckBox) findViewById(R.id.eula_agree_check_box);
+        builder.setPositiveButton("agree", (dialogInterface, i) -> {
+            if(agreeCheckBox.isChecked()) {
+
+            } else {
+                Toast.makeText(getApplicationContext(), "Please agree the EULA", Toast.LENGTH_LONG);
+            }
+        });
+        builder.setNegativeButton("exit", (dialogInterface, i) -> {
+            dialogInterface.dismiss();
+            getParent().finish();
+        });
+    }
 
     // thread to handle scans
     private class ScanHandler implements Runnable {
