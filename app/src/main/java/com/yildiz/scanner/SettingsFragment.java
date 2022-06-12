@@ -25,6 +25,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         EditTextPreference pref = findPreference("max_thread_num");
 
         assert pref != null;
+        pref.setDefaultValue("128");
 
         pref.setOnBindEditTextListener(new EditTextPreference.OnBindEditTextListener() {
             @Override
@@ -38,6 +39,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         EditTextPreference pref1 = findPreference("timeout");
 
         assert pref1 != null;
+        pref.setDefaultValue("1000");
 
         pref1.setOnBindEditTextListener(new EditTextPreference.OnBindEditTextListener() {
             @Override

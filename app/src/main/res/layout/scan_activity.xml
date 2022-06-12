@@ -109,7 +109,6 @@
         android:importantForAutofill="no"
         android:inputType="number"
         android:padding="8dp"
-        android:text="@string/port_text"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

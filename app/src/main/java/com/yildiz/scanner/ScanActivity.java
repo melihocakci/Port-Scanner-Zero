@@ -109,7 +109,6 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
         if(scanning) {
             scanning = false;
             handler.removeCallbacks(progressBarUpdater);
-            scanProgressBar.setProgress(0);
             Scanner.stopScan();
             button.setText(R.string.button_start);
             output_field.setText("Scan stopped");
@@ -159,8 +158,9 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
             } finally {
                 if(Scanner.getPortCount() == 0) {
                     handler.removeCallbacks(this);
-                } else
+                } else {
                     handler.postDelayed(this, 200);
+                }
             }
         }
     };
