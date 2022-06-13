@@ -8,6 +8,10 @@
         <!-- Status bar color. -->
 
         <!-- Customize your theme here. -->
+        <item name="colorPrimary">#EC5800</item>
+        <item name="colorPrimaryDark">#C04000</item>
+        <item name="colorAccent">#EC5800</item>
+        <item name="backgroundColor">#272822</item>
 
     </style>
 </resources>
