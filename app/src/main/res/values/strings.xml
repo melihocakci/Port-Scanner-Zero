@@ -10,4 +10,10 @@
 
     <string name="thread_count_preference_title">Maximum Number of Threads</string>
     <string name="scan_type_text">Choose Scan Type</string>
+
+    <string name="eula_text">
+        PLEASE PAY ATTENTION TO THIS END-USER LICENSE AGREEMENT. BY INSTALLING OR USING THIS SOFTWARE, YOU ACCEPT THE TERMS OF THIS EULA. IF YOU DO NOT AGREE WITH THE TERMS, DO NOT INSTALL OR USE THIS SOFTWARE.
+        \nTHIS SOFTWARE IS ONLY TO BE USED WITHIN THE KNOWLEDGE AND CONSENT OF THE TARGET DEVICE\'S OWNER. UNLESS YOU HAVE AUTHORITY TO USE THIS SOFTWARE ON ANY DEVICE, YOU MUST NOT USE IT.
+    </string>
+    <string name="eula_agree_Text">I have read and agree the terms in the EULA</string>
 </resources>
