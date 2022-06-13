@@ -5,6 +5,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 import androidx.appcompat.widget.Toolbar;
+import androidx.preference.SwitchPreference;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,6 +14,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,6 +23,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -80,8 +83,10 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
         scanTypeSpinner.setAdapter(scanTypeAdapter);
         scanTypeSpinner.setOnItemSelectedListener(this);
 
-
-
+        //To set isEULAAgreed preference false
+        //setEULAAgreed(false, getApplicationContext());
+        if(!PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("isEULAAgreed", false))
+            showEulaAlert();
     }
 
     @Override
@@ -176,18 +181,30 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         View eulaView = this.getLayoutInflater().inflate(R.layout.eula_alert_layout, null);
         builder.setView(eulaView);
-        CheckBox agreeCheckBox = (CheckBox) findViewById(R.id.eula_agree_check_box);
+        CheckBox agreeCheckBox = eulaView.findViewById(R.id.eula_agree_check_box);
         builder.setPositiveButton("agree", (dialogInterface, i) -> {
-            if(agreeCheckBox.isChecked()) {
-
-            } else {
-                Toast.makeText(getApplicationContext(), "Please agree the EULA", Toast.LENGTH_LONG);
-            }
+            setEULAAgreed(true, getApplicationContext());
         });
         builder.setNegativeButton("exit", (dialogInterface, i) -> {
-            dialogInterface.dismiss();
-            getParent().finish();
+            dialogInterface.cancel();
+            finish();
         });
+        AlertDialog eulaAlert = builder.show();
+        Button buttonPositive = eulaAlert.getButton(DialogInterface.BUTTON_POSITIVE);
+        buttonPositive.setEnabled(false);
+        agreeCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                buttonPositive.setEnabled(b);
+            }
+        });
+    }
+
+    private void setEULAAgreed(boolean state, Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor prefEditor = prefs.edit();
+        prefEditor.putBoolean("isEULAAgreed", state);
+        prefEditor.apply();
     }
 
     // thread to handle scans
