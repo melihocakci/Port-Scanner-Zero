@@ -182,12 +182,18 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
         View eulaView = this.getLayoutInflater().inflate(R.layout.eula_alert_layout, null);
         builder.setView(eulaView);
         CheckBox agreeCheckBox = eulaView.findViewById(R.id.eula_agree_check_box);
-        builder.setPositiveButton("agree", (dialogInterface, i) -> {
+        builder.setPositiveButton("AGREE", (dialogInterface, i) -> {
             setEULAAgreed(true, getApplicationContext());
+            dialogInterface.dismiss();
         });
-        builder.setNegativeButton("exit", (dialogInterface, i) -> {
+        builder.setNegativeButton("EXIT", (dialogInterface, i) -> {
             dialogInterface.cancel();
-            finish();
+        });
+        builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialogInterface) {
+                finish();
+            }
         });
         AlertDialog eulaAlert = builder.show();
         Button buttonPositive = eulaAlert.getButton(DialogInterface.BUTTON_POSITIVE);
@@ -198,6 +204,7 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
                 buttonPositive.setEnabled(b);
             }
         });
+
     }
 
     private void setEULAAgreed(boolean state, Context context) {
