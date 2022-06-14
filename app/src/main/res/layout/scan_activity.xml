@@ -86,7 +86,7 @@
     <TextView
         android:id="@+id/scanned_text"
         style="@style/Widget.AppCompat.TextView"
-        android:layout_width="96dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="6dp"
