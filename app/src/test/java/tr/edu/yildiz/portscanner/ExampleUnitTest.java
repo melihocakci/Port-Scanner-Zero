@@ -1,4 +1,4 @@
-package com.yildiz.scanner;
+package tr.edu.yildiz.portscanner;
 
 import org.junit.Test;
 

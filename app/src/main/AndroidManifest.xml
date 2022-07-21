@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.yildiz.scanner">
+    package="tr.edu.yildiz.portscanner">
 
     <uses-permission android:name="android.permission.INTERNET" />
 

@@ -1,4 +1,4 @@
-package com.yildiz.scanner;
+package tr.edu.yildiz.portscanner;
 
 import android.text.InputFilter;
 import android.text.Spanned;

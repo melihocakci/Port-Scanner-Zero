@@ -4,7 +4,7 @@
 #include <arpa/inet.h>
 
 extern "C" JNIEXPORT jstring JNICALL
-Java_com_yildiz_scanner_ScanActivity_getServByPort(JNIEnv* env, jobject, jint num)
+Java_tr_edu_yildiz_portscanner_ScanActivity_getServByPort(JNIEnv* env, jobject, jint num)
 {
     int portnum = (int) num;
     struct servent* res = getservbyport(htons(portnum), "tcp");

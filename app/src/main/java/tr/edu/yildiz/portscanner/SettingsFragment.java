@@ -1,4 +1,4 @@
-package com.yildiz.scanner;
+package tr.edu.yildiz.portscanner;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;

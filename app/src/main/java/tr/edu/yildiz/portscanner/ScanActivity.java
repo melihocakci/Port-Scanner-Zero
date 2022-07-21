@@ -1,4 +1,4 @@
-package com.yildiz.scanner;
+package tr.edu.yildiz.portscanner;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;

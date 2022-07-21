@@ -1,4 +1,4 @@
-package com.yildiz.scanner;
+package tr.edu.yildiz.portscanner;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
