@@ -1,11 +1,9 @@
-package tr.edu.yildiz.portscanner;
+package tr.edu.yildiz.ce.pszero.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
-import androidx.appcompat.widget.Toolbar;
-import androidx.preference.SwitchPreference;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -14,7 +12,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,18 +20,21 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.net.InetAddress;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
+
+import tr.edu.yildiz.ce.R;
+import tr.edu.yildiz.ce.pszero.other.Port;
+import tr.edu.yildiz.ce.pszero.other.State;
+import tr.edu.yildiz.ce.pszero.scanner.TcpScanner;
 
 public class ScanActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private Spinner scanTypeSpinner;
@@ -51,13 +51,13 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
     private int timeout;
     private int maxThreadNum;
 
-    // Used to load the 'portscanner' library on application startup.
+    // Used to load the 'pszero' library on application startup.
     static {
-        System.loadLibrary("portscanner");
+        System.loadLibrary("pszero");
     }
 
     /**
-     * A native method that is implemented by the 'portscanner' native library,
+     * A native method that is implemented by the 'pszero' native library,
      * which is packaged with this application.
      */
     public native String getServByPort(int port);
@@ -85,13 +85,13 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
 
         //To set isEULAAgreed preference false
         //setEULAAgreed(false, getApplicationContext());
-        if(!PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("isEULAAgreed", false))
+        if (!PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("isEULAAgreed", false))
             showEulaAlert();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main,menu);
+        getMenuInflater().inflate(R.menu.menu_main, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -118,14 +118,14 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
     public void toggleScan(View view) {
-        if(scanning) {
+        if (scanning) {
             scanning = false;
             handler.removeCallbacks(progressBarUpdater);
-            Scanner.stopScan();
+            TcpScanner.stopScan();
             button.setText(R.string.button_start);
             output_field.setText("Scan stopped");
         } else {
-            if(host_field.getText().length() == 0 || port_field.getText().length() == 0) {
+            if (host_field.getText().length() == 0 || port_field.getText().length() == 0) {
                 output_field.setText("Please fill the fields");
                 return;
             }
@@ -141,7 +141,7 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
             String pref2 = prefs.getString("timeout", "1000");
             timeout = Integer.parseInt(pref2);
             // close keyboard
-            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             // start scan handler
             Runnable scanHandler = new ScanHandler();
@@ -154,7 +154,7 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
     void updateScanProgress() {
-        scanProgressBar.setProgress(scanProgressBar.getMax() - Scanner.getPortCount());
+        scanProgressBar.setProgress(scanProgressBar.getMax() - TcpScanner.getPortCount());
         String text = scanProgressBar.getProgress() + " / " + scanProgressBar.getMax();
         scannedText.setText(text);
     }
@@ -168,7 +168,7 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
-                if(Scanner.getPortCount() == 0) {
+                if (TcpScanner.getPortCount() == 0) {
                     handler.removeCallbacks(this);
                 } else {
                     handler.postDelayed(this, 200);
@@ -183,34 +183,24 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
         builder.setView(eulaView);
         CheckBox agreeCheckBox = eulaView.findViewById(R.id.eula_agree_check_box);
         builder.setPositiveButton("AGREE", (dialogInterface, i) -> {
-            setEULAAgreed(true, getApplicationContext());
+            setEulaAgreed(getApplicationContext());
             dialogInterface.dismiss();
         });
         builder.setNegativeButton("EXIT", (dialogInterface, i) -> {
             dialogInterface.cancel();
         });
-        builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialogInterface) {
-                finish();
-            }
-        });
+        builder.setOnCancelListener(dialogInterface -> finish());
         AlertDialog eulaAlert = builder.show();
         Button buttonPositive = eulaAlert.getButton(DialogInterface.BUTTON_POSITIVE);
         buttonPositive.setEnabled(false);
-        agreeCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                buttonPositive.setEnabled(b);
-            }
-        });
+        agreeCheckBox.setOnCheckedChangeListener((compoundButton, b) -> buttonPositive.setEnabled(b));
 
     }
 
-    private void setEULAAgreed(boolean state, Context context) {
+    private void setEulaAgreed(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor prefEditor = prefs.edit();
-        prefEditor.putBoolean("isEULAAgreed", state);
+        prefEditor.putBoolean("isEULAAgreed", true);
         prefEditor.apply();
     }
 
@@ -234,23 +224,23 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
             }
 
             // get port list
-            LinkedList<Integer> portList = new LinkedList<Integer>();
+            LinkedList<Integer> portList = new LinkedList<>();
             try {
                 HashMap<Integer, Boolean> hashMap = new HashMap<>();
                 String[] ports = port_input.split(",");
-                for(String str : ports) {
-                    if(str.contains("-")) {
+                for (String str : ports) {
+                    if (str.contains("-")) {
                         String[] gap = str.split("-");
                         int first = Integer.parseInt(gap[0]);
                         int last = Integer.parseInt(gap[1]);
 
                         // input control
-                        if(gap.length != 2 || first > last || first < 1 || last > 65535) {
+                        if (gap.length != 2 || first > last || first < 1 || last > 65535) {
                             throw new Exception();
                         }
 
-                        for(int j = first; j <= last; j++) {
-                            if(hashMap.get(j) != null) {
+                        for (int j = first; j <= last; j++) {
+                            if (hashMap.get(j) != null) {
                                 throw new Exception();
                             }
 
@@ -261,7 +251,7 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
                         int num = Integer.parseInt(str);
 
                         // input control
-                        if(num < 1 || num > 65535 || hashMap.get(num) != null) {
+                        if (num < 1 || num > 65535 || hashMap.get(num) != null) {
                             throw new Exception();
                         }
 
@@ -279,15 +269,15 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
             handler.post(progressBarUpdater);
 
             // scan ports
-            Scanner.scanPorts(host, portList, maxThreadNum, timeout);
+            TcpScanner.scanPorts(host, portList, maxThreadNum, timeout);
 
             // get results from Scanner class
-            LinkedList<Integer> openPorts = Scanner.getOpenPorts();
-            LinkedList<Integer> closedPorts = Scanner.getClosedPorts();
-            LinkedList<Integer> filteredPorts = Scanner.getFilteredPorts();
+            LinkedList<Integer> openPorts = TcpScanner.getOpenPorts();
+            LinkedList<Integer> closedPorts = TcpScanner.getClosedPorts();
+            LinkedList<Integer> filteredPorts = TcpScanner.getFilteredPorts();
 
             // print results
-            if(scanning) {
+            if (scanning) {
                 // end timer
                 double end = System.currentTimeMillis();
 
@@ -299,57 +289,42 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
                 LinkedList<Port> outputPorts = new LinkedList<>();
 
                 // closed ports
-                if(closedPorts.size() > 10)  {
+                if (closedPorts.size() > 10) {
                     output.append("Not listed: ").append(closedPorts.size()).append(" closed ports\n");
                 } else {
-                    for(int portnum: closedPorts) {
-                        Port port = new Port();
-                        port.number = portnum;
-                        port.state = "closed";
-                        port.service = getServByPort(portnum);
-
-                        outputPorts.add(port);
+                    for (int portNum : closedPorts) {
+                        outputPorts.add(new Port(portNum, State.CLOSED, getServByPort(portNum)));
                     }
                 }
 
                 // filtered ports
-                if(filteredPorts.size() > 10)  {
+                if (filteredPorts.size() > 10) {
                     output.append("Not listed: ").append(filteredPorts.size()).append(" filtered ports\n");
                 } else {
-                    for(int portnum: filteredPorts) {
-                        Port port = new Port();
-                        port.number = portnum;
-                        port.state = "filtered";
-                        port.service = getServByPort(portnum);
-
-                        outputPorts.add(port);
+                    for (int portNum : filteredPorts) {
+                        outputPorts.add(new Port(portNum, State.FILTERED, getServByPort(portNum)));
                     }
                 }
 
                 // open ports
-                for(int portnum: openPorts) {
-                    Port port = new Port();
-                    port.number = portnum;
-                    port.state = "open";
-                    port.service = getServByPort(portnum);
-
-                    outputPorts.add(port);
+                for (int portNum : openPorts) {
+                    outputPorts.add(new Port(portNum, State.OPEN, getServByPort(portNum)));
                 }
 
                 // add ports to output
-                if(!outputPorts.isEmpty()) {
+                if (!outputPorts.isEmpty()) {
                     output.append("##################\n").append("PORT | STATUS | SERVICE\n");
 
                     Collections.sort(outputPorts, new comparePorts());
 
-                    for(Port port: outputPorts) {
-                        output.append(port.number).append("/tcp | ")
-                                .append(port.state).append(" | ")
-                                .append(port.service).append("\n");
+                    for (Port port : outputPorts) {
+                        output.append(port.getNumber()).append("/tcp | ")
+                                .append(port.getState()).append(" | ")
+                                .append(port.getService()).append("\n");
                     }
                 }
 
-                // print resutls
+                // print results
                 handler.post(() -> {
                     scanning = false;
                     button.setText(R.string.button_start);
@@ -370,7 +345,7 @@ public class ScanActivity extends AppCompatActivity implements AdapterView.OnIte
         private class comparePorts implements Comparator<Port> {
             @Override
             public int compare(Port port1, Port port2) {
-                return port1.number - port2.number;
+                return port1.getNumber() - port2.getNumber();
             }
         }
     }

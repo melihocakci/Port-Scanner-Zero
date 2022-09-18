@@ -6,7 +6,7 @@ android {
     compileSdk 32
 
     defaultConfig {
-        applicationId "tr.edu.yildiz.portscanner"
+        applicationId "tr.edu.yildiz.ce.pszero"
         minSdk 21
         targetSdk 32
         versionCode 1

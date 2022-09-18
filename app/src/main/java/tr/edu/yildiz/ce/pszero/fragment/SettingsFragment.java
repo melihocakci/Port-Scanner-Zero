@@ -1,6 +1,5 @@
-package tr.edu.yildiz.portscanner;
+package tr.edu.yildiz.ce.pszero.fragment;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -10,7 +9,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.EditTextPreference;
 import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.PreferenceManager;
+
+import tr.edu.yildiz.ce.R;
+import tr.edu.yildiz.ce.pszero.filter.InputFilterMinMax;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
 
@@ -31,7 +32,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             @Override
             public void onBindEditText(@NonNull EditText editText) {
                 editText.setInputType(InputType.TYPE_CLASS_NUMBER);
-                editText.setFilters(new InputFilter[]{ new InputFilterMinMax(1, 255)});
+                editText.setFilters(new InputFilter[]{new InputFilterMinMax(1, 255)});
 
             }
         });
@@ -45,7 +46,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             @Override
             public void onBindEditText(@NonNull EditText editText) {
                 editText.setInputType(InputType.TYPE_CLASS_NUMBER);
-                editText.setFilters(new InputFilter[]{ new InputFilterMinMax(1, 2000)});
+                editText.setFilters(new InputFilter[]{new InputFilterMinMax(1, 2000)});
 
             }
         });

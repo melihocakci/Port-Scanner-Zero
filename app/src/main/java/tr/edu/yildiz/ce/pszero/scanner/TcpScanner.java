@@ -1,4 +1,4 @@
-package tr.edu.yildiz.portscanner;
+package tr.edu.yildiz.ce.pszero.scanner;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -8,7 +8,7 @@ import java.net.SocketTimeoutException;
 import java.util.LinkedList;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class Scanner implements Runnable{
+public class TcpScanner implements Runnable {
     private static InetAddress host;
     private static LinkedList<Integer> portList;
     private static int timeout;
@@ -30,20 +30,20 @@ public class Scanner implements Runnable{
 
         // decide on thread number
         int threadNum = (int) Math.sqrt(list.size());
-        if(threadNum > maxThreadNum) {
+        if (threadNum > maxThreadNum) {
             threadNum = maxThreadNum;
         }
 
         LinkedList<Thread> threads = new LinkedList<>();
         // launch threads
-        for(int i = 0; i < threadNum; i++) {
-            Thread thread = new Thread(new Scanner());
+        for (int i = 0; i < threadNum; i++) {
+            Thread thread = new Thread(new TcpScanner());
             thread.start();
             threads.add(thread);
         }
 
         // wait for threads to finish
-        for(Thread thread: threads) {
+        for (Thread thread : threads) {
             try {
                 thread.join();
             } catch (InterruptedException e) {
@@ -60,11 +60,11 @@ public class Scanner implements Runnable{
 
     @Override
     public void run() {
-        while(true) {
+        while (true) {
             // lock mutex
             mutex.lock();
             // return if port list is empty or scan has to stop
-            if(stopScan || portList.isEmpty()) {
+            if (stopScan || portList.isEmpty()) {
                 mutex.unlock();
                 return;
             }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="tr.edu.yildiz.portscanner">
+    package="tr.edu.yildiz.ce">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -12,10 +12,10 @@
         android:supportsRtl="true"
         android:theme="@style/theme_main">
         <activity
-            android:name=".SettingsActivity"
-            android:exported="false"/>
+            android:name="tr.edu.yildiz.ce.pszero.activity.SettingsActivity"
+            android:exported="false" />
         <activity
-            android:name=".ScanActivity"
+            android:name="tr.edu.yildiz.ce.pszero.activity.ScanActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

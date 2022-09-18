@@ -1,4 +1,4 @@
-package tr.edu.yildiz.portscanner;
+package tr.edu.yildiz.ce.pszero.activity;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
@@ -6,6 +6,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.view.MenuItem;
+
+import tr.edu.yildiz.ce.R;
+import tr.edu.yildiz.ce.pszero.fragment.SettingsFragment;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -17,7 +20,7 @@ public class SettingsActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Settings");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.settings_activity,new SettingsFragment()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.settings_activity, new SettingsFragment()).commit();
     }
 
     @Override

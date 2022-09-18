@@ -1,4 +1,4 @@
-package tr.edu.yildiz.portscanner;
+package tr.edu.yildiz.ce.pszero;
 
 import android.content.Context;
 
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
     public void useAppContext() {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        assertEquals("tr.edu.yildiz.portscanner", appContext.getPackageName());
+        assertEquals("tr.edu.yildiz.ce.pszero", appContext.getPackageName());
     }
 }
